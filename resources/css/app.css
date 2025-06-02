@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-hidden {
+    display: none;
+}
+
+.cancel-btn {
+    @apply px-4 py-2 border border-gray-300 rounded text-gray-700 transition;
+}
+
+.cancel-btn:hover {
+    @apply bg-gray-100 text-gray-900;
+}
+
+.save-btn {
+    @apply px-4 py-2 bg-indigo-600 text-white rounded transition;
+}
+
+.save-btn:hover {
+    @apply bg-indigo-700;
+}
