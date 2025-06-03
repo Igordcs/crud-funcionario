@@ -77,11 +77,15 @@ class DatabaseSeeder extends Seeder
                 'remember_token' => Str::random(10),
             ]);
 
+            $cpf = preg_replace('/[^0-9]/', '', $employeeData['cpf']);
+            $phoneNumber = preg_replace('/[^0-9]/', '', $employeeData['phone_number']);
+
+
             Employee::create([
                 'user_id' => $user->id,
-                'cpf' => $employeeData['cpf'],
+                'cpf' => $cpf,
                 'birth_date' => $employeeData['birth_date'],
-                'phone_number' => $employeeData['phone_number'],
+                'phone_number' => $phoneNumber,
                 'gender' => $employeeData['gender'],
             ]);
         }

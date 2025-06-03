@@ -4,7 +4,7 @@
         @if (isset($viewMode) && $viewMode)
             <p class="mt-1 p-2 bg-gray-100 rounded">{{ $employee->user->name ?? '' }}</p>
         @else
-            <input type="text" name="name" id="name" required
+            <input type="text" name="name" id="name" required placeholder="Fulano da Silva"
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 value="{{ old('name', $employee->user->name ?? '') }}">
             @error('name')
@@ -17,7 +17,7 @@
         @if (isset($viewMode) && $viewMode)
             <p class="mt-1 p-2 bg-gray-100 rounded">{{ $employee->user->email ?? '' }}</p>
         @else
-            <input type="email" name="email" id="email" required
+            <input type="email" name="email" id="email" required placeholder="email@example.com"
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 value="{{ old('email', $employee->user->email ?? '') }}">
             @error('email')
@@ -31,7 +31,7 @@
             @if (isset($viewMode) && $viewMode)
                 <p class="mt-1 p-2 bg-gray-100 rounded">••••••••</p>
             @else
-                <input type="password" name="password" id="password" required
+                <input type="password" name="password" id="password" required placeholder="*******"
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 @error('password')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -44,7 +44,7 @@
         @if (isset($viewMode) && $viewMode)
             <p class="mt-1 p-2 bg-gray-100 rounded">{{ $employee->cpf ?? '' }}</p>
         @else
-            <input type="text" name="cpf" id="cpf" required
+            <input type="text" name="cpf" id="cpf" required placeholder="000.000.000-00"
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 value="{{ old('cpf', $employee->cpf ?? '') }}">
             @error('cpf')
@@ -71,9 +71,9 @@
         @if (isset($viewMode) && $viewMode)
             <p class="mt-1 p-2 bg-gray-100 rounded">{{ $employee->phone_number ?? '' }}</p>
         @else
-            <input type="text" name="phone_number" id="phone_number" required
+            <input type="text" name="phone_number" id="phone_number" required placeholder="(00) 0 0000-0000"
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value="{{ old('phone_number', $employee->phone_number ?? '') }}">
+                value="{{ old('phone_number', $employee->phone_number ?? '') }}" maxlength="15">
             @error('phone_number')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -107,3 +107,37 @@
         @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cpfInput = document.getElementById('cpf');
+        const phoneInput = document.getElementById('phone_number');
+
+        function maskCPF(value) {
+            return value
+                .replace(/\D/g, '')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+
+        function maskPhone(value) {
+            return value
+                .replace(/\D/g, '')
+                .replace(/(\d{2})(\d)/, '($1) $2')
+                .replace(/(\d{4,5})(\d{4})$/, '$1-$2');
+        }
+
+        if (cpfInput) {
+            cpfInput.addEventListener('input', function(e) {
+                e.target.value = maskCPF(e.target.value);
+            });
+        }
+
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                e.target.value = maskPhone(e.target.value);
+            });
+        }
+    });
+</script>
