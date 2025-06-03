@@ -18,13 +18,34 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 5);
+        $search = $request->input('search', null);
 
-        $employees = Employee::with('user')->paginate($perPage);
+
+        $query = Employee::select('employees.*')
+            ->join('users', 'employees.user_id', '=', 'users.id')
+            ->with('user');
+
+        if ($search) {
+            $digits = preg_replace('/[^0-9]/', '', $search);
+            $hasDigits = !empty($digits);
+
+            $query->where(function ($q) use ($search, $digits, $hasDigits) {
+                $q->where('users.name', 'like', "%$search%")
+                    ->orWhere('users.email', 'like', "%$search%");
+
+                if ($hasDigits) {
+                    $q->orWhere('employees.cpf', 'like', "%$digits%");
+                }
+            });
+        }
+
+        $employees = $query->paginate($perPage);
 
         return view('employees.index', [
             'employees' => $employees,
             'perPage' => $perPage,
-            'page' => $request->input('page', 1)
+            'page' => $request->input('page', 1),
+            'search' => $search
         ]);
     }
 
@@ -41,10 +62,7 @@ class EmployeeController extends Controller
      */
     public function store(StoreEmployeeRequest $request)
     {
-        \Log::info('Dados recebidos:', $request->all());
-
         $validatedData = $request->validated();
-        \Log::info('Dados validados:', $validatedData);
 
         try {
             DB::beginTransaction();
@@ -54,16 +72,17 @@ class EmployeeController extends Controller
                 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
             ]);
-            \Log::info('Usuário criado:', $user->toArray());
 
-            $employee = Employee::create([
+            $cpf = preg_replace('/[^0-9]/', '', $validatedData['cpf']);
+            $phoneNumber = preg_replace('/[^0-9]/', '', $validatedData['phone_number']);
+
+            Employee::create([
                 'user_id' => $user->id,
-                'cpf' => $validatedData['cpf'],
+                'cpf' => $cpf,
                 'birth_date' => $validatedData['birth_date'],
-                'phone_number' => $validatedData['phone_number'],
+                'phone_number' => $phoneNumber,
                 'gender' => $validatedData['gender'],
             ]);
-            \Log::info('Funcionário criado:', $employee->toArray());
 
             DB::commit();
 
@@ -111,10 +130,13 @@ class EmployeeController extends Controller
                 ]);
             }
 
+            $cpf = preg_replace('/[^0-9]/', '', $validatedData['cpf']);
+            $phoneNumber = preg_replace('/[^0-9]/', '', $validatedData['phone_number']);
+
             $employee->update([
-                'cpf' => $validatedData['cpf'],
+                'cpf' => $cpf,
                 'birth_date' => $validatedData['birth_date'],
-                'phone_number' => $validatedData['phone_number'],
+                'phone_number' => $phoneNumber,
                 'gender' => $validatedData['gender'],
             ]);
 
