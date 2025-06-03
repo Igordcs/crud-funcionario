@@ -16,18 +16,39 @@ Este projeto é um sistema CRUD (Create, Read, Update, Delete) para gerenciament
 
 ## Instalação
 
-- Instale as dependências: composer install
+- Instale as dependências: 
+```bash
+  composer install
+  npm run dev
+```
 - Copie o .env.example e altere pra .env
 
-## Rodar o servidor
-
-Execute esse comando:
+## Configuração do banco
+- Crie um arquivo database.sqlite na pasta "/database"
+- Execute os comando:
 ```bash
-  ./start.sh
+  php artisan migrate:fresh
+  php artisan db:seed
 ```
 
-
+## Senha de ADMIN
+Caso tenha executado o comando:
+```bash
+  php artisan db:seed
+```
 O script vai gerar uma conta padrão:
 
 - Email: admin@admin.com
 - Senha: 123456
+
+## Rodar o servidor
+
+Caso consiga rodar bash, execute esse comando:
+```bash
+  ./start.sh
+```
+Senão, execute esses comandos:
+```bash
+  npm run dev
+  php artisan serve
+```
